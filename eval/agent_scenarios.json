@@ -1,0 +1,17 @@
+[
+  {"id": "evid_sglt2", "category": "evidence", "expected_tools": ["search_literature"], "query": "What does the evidence say about SGLT2 inhibitors and mortality in heart failure?"},
+  {"id": "evid_betablocker", "category": "evidence", "expected_tools": ["search_literature"], "query": "Is there trial evidence that beta-blockers reduce mortality in heart failure with reduced ejection fraction?"},
+  {"id": "evid_sodium", "category": "evidence", "expected_tools": ["search_literature"], "query": "What is the prognostic impact of low serum sodium in heart failure?"},
+  {"id": "evid_arni", "category": "evidence", "expected_tools": ["search_literature"], "query": "Does sacubitril/valsartan improve outcomes compared with ACE inhibitors in heart failure?"},
+  {"id": "guide_firstline", "category": "guideline", "expected_tools": ["lookup_guideline"], "query": "What do current heart-failure guidelines recommend as first-line therapy for HFrEF?"},
+  {"id": "guide_device", "category": "guideline", "expected_tools": ["lookup_guideline"], "query": "What are the guideline recommendations for ICD and CRT device therapy in heart failure?"},
+  {"id": "guide_sequencing", "category": "guideline", "expected_tools": ["lookup_guideline"], "query": "According to guideline-directed medical therapy, how should the four pillars of HFrEF treatment be sequenced?"},
+  {"id": "risk_a", "category": "risk", "expected_tools": ["estimate_patient_risk"], "query": "Estimate the mortality risk for a patient: age 68, ejection fraction 30, serum creatinine 1.8, serum sodium 134, CPK 200, platelets 250000, anaemia present, no diabetes, high blood pressure present, male, non-smoker."},
+  {"id": "risk_b", "category": "risk", "expected_tools": ["estimate_patient_risk"], "query": "What is the estimated mortality risk for a 60-year-old woman with ejection fraction 40, serum creatinine 1.0, serum sodium 138, CPK 150, platelets 300000, no anaemia, diabetic, no hypertension, smoker?"},
+  {"id": "risk_evid_a", "category": "risk+evidence", "expected_tools": ["estimate_patient_risk", "search_literature"], "query": "A 72-year-old man with heart failure: ejection fraction 25, serum creatinine 2.1, serum sodium 131, CPK 180, platelets 210000, no anaemia, diabetic, hypertensive, non-smoker. What is his mortality risk, and what does the evidence say about managing reduced ejection fraction?"},
+  {"id": "risk_evid_b", "category": "risk+evidence", "expected_tools": ["estimate_patient_risk", "search_literature"], "query": "For a patient aged 65 with ejection fraction 35, serum creatinine 1.4, serum sodium 136, CPK 120, platelets 260000, anaemia present, no diabetes, hypertensive, male, non-smoker - estimate the mortality risk and summarize the evidence on SGLT2 inhibitors."},
+  {"id": "defer_recipe", "category": "defer", "expected_tools": [], "query": "What's a good recipe for dinner tonight?"},
+  {"id": "defer_poem", "category": "defer", "expected_tools": [], "query": "Can you write me a short poem about the ocean?"},
+  {"id": "defer_offtopic", "category": "defer", "expected_tools": [], "query": "What's the best programming language to learn in 2026?"},
+  {"id": "clarify_partial", "category": "clarify", "expected_tools": [], "query": "What is the mortality risk for a patient with an ejection fraction of 20?"}
+]

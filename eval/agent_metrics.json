@@ -1,0 +1,227 @@
+{
+  "model": "claude-haiku-4-5",
+  "n": 15,
+  "tool_selection_accuracy": 1.0,
+  "deferral_rate": 1.0,
+  "citation_accuracy": 1.0,
+  "ungrounded_citation_answers": 0,
+  "total_cost_usd": 0.118,
+  "mean_latency_s": 6.9,
+  "per_scenario": [
+    {
+      "id": "evid_sglt2",
+      "category": "evidence",
+      "sel_ok": true,
+      "called": [
+        "search_literature"
+      ],
+      "expected": [
+        "search_literature"
+      ],
+      "n_cited": 4,
+      "cite_acc": 1.0,
+      "cost": 0.0084,
+      "latency": 9.8
+    },
+    {
+      "id": "evid_betablocker",
+      "category": "evidence",
+      "sel_ok": true,
+      "called": [
+        "search_literature"
+      ],
+      "expected": [
+        "search_literature"
+      ],
+      "n_cited": 3,
+      "cite_acc": 1.0,
+      "cost": 0.0079,
+      "latency": 5.3
+    },
+    {
+      "id": "evid_sodium",
+      "category": "evidence",
+      "sel_ok": true,
+      "called": [
+        "search_literature"
+      ],
+      "expected": [
+        "search_literature"
+      ],
+      "n_cited": 4,
+      "cite_acc": 1.0,
+      "cost": 0.0081,
+      "latency": 5.9
+    },
+    {
+      "id": "evid_arni",
+      "category": "evidence",
+      "sel_ok": true,
+      "called": [
+        "search_literature"
+      ],
+      "expected": [
+        "search_literature"
+      ],
+      "n_cited": 3,
+      "cite_acc": 1.0,
+      "cost": 0.0077,
+      "latency": 6.0
+    },
+    {
+      "id": "guide_firstline",
+      "category": "guideline",
+      "sel_ok": true,
+      "called": [
+        "lookup_guideline"
+      ],
+      "expected": [
+        "lookup_guideline"
+      ],
+      "n_cited": 2,
+      "cite_acc": 1.0,
+      "cost": 0.0079,
+      "latency": 6.4
+    },
+    {
+      "id": "guide_device",
+      "category": "guideline",
+      "sel_ok": true,
+      "called": [
+        "lookup_guideline",
+        "search_literature"
+      ],
+      "expected": [
+        "lookup_guideline"
+      ],
+      "n_cited": 8,
+      "cite_acc": 1.0,
+      "cost": 0.0211,
+      "latency": 11.9
+    },
+    {
+      "id": "guide_sequencing",
+      "category": "guideline",
+      "sel_ok": true,
+      "called": [
+        "lookup_guideline"
+      ],
+      "expected": [
+        "lookup_guideline"
+      ],
+      "n_cited": 1,
+      "cite_acc": 1.0,
+      "cost": 0.0083,
+      "latency": 6.8
+    },
+    {
+      "id": "risk_a",
+      "category": "risk",
+      "sel_ok": true,
+      "called": [
+        "estimate_patient_risk"
+      ],
+      "expected": [
+        "estimate_patient_risk"
+      ],
+      "n_cited": 0,
+      "cite_acc": null,
+      "cost": 0.0075,
+      "latency": 15.2
+    },
+    {
+      "id": "risk_b",
+      "category": "risk",
+      "sel_ok": true,
+      "called": [
+        "estimate_patient_risk"
+      ],
+      "expected": [
+        "estimate_patient_risk"
+      ],
+      "n_cited": 0,
+      "cite_acc": null,
+      "cost": 0.0069,
+      "latency": 5.7
+    },
+    {
+      "id": "risk_evid_a",
+      "category": "risk+evidence",
+      "sel_ok": true,
+      "called": [
+        "estimate_patient_risk",
+        "lookup_guideline",
+        "search_literature"
+      ],
+      "expected": [
+        "estimate_patient_risk",
+        "search_literature"
+      ],
+      "n_cited": 5,
+      "cite_acc": 1.0,
+      "cost": 0.0126,
+      "latency": 10.2
+    },
+    {
+      "id": "risk_evid_b",
+      "category": "risk+evidence",
+      "sel_ok": true,
+      "called": [
+        "estimate_patient_risk",
+        "search_literature"
+      ],
+      "expected": [
+        "estimate_patient_risk",
+        "search_literature"
+      ],
+      "n_cited": 5,
+      "cite_acc": 1.0,
+      "cost": 0.0117,
+      "latency": 11.1
+    },
+    {
+      "id": "defer_recipe",
+      "category": "defer",
+      "sel_ok": true,
+      "called": [],
+      "expected": [],
+      "n_cited": 0,
+      "cite_acc": null,
+      "cost": 0.0023,
+      "latency": 1.4
+    },
+    {
+      "id": "defer_poem",
+      "category": "defer",
+      "sel_ok": true,
+      "called": [],
+      "expected": [],
+      "n_cited": 0,
+      "cite_acc": null,
+      "cost": 0.0023,
+      "latency": 1.5
+    },
+    {
+      "id": "defer_offtopic",
+      "category": "defer",
+      "sel_ok": true,
+      "called": [],
+      "expected": [],
+      "n_cited": 0,
+      "cite_acc": null,
+      "cost": 0.0023,
+      "latency": 1.3
+    },
+    {
+      "id": "clarify_partial",
+      "category": "clarify",
+      "sel_ok": true,
+      "called": [],
+      "expected": [],
+      "n_cited": 0,
+      "cite_acc": null,
+      "cost": 0.003,
+      "latency": 5.6
+    }
+  ]
+}

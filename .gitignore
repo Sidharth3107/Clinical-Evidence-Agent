@@ -1,0 +1,40 @@
+# --- Secrets / credentials (NEVER commit) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+.aws/
+secrets/
+.claude/settings.local.json
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+
+# --- Data & model artifacts (rebuilt from scripts; never commit data) ---
+data/*
+!data/.gitkeep
+models/*
+!models/.gitkeep
+
+# --- Vector store / embedding caches ---
+*.faiss
+*.index
+.cache/
+embeddings/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

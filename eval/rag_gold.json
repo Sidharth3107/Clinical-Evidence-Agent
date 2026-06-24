@@ -1,0 +1,22 @@
+[
+  {"question": "Does spironolactone reduce mortality in patients with severe heart failure and reduced ejection fraction?", "relevant_pmids": ["10471456"]},
+  {"question": "Is eplerenone beneficial for patients with systolic heart failure and only mild symptoms?", "relevant_pmids": ["21073363"]},
+  {"question": "Does a mineralocorticoid receptor antagonist improve outcomes in heart failure with preserved ejection fraction?", "relevant_pmids": ["24716680", "25406305"]},
+  {"question": "What is the effect of metoprolol CR/XL on mortality in chronic heart failure?", "relevant_pmids": ["10376614"]},
+  {"question": "How do carvedilol and metoprolol compare on clinical outcomes in chronic heart failure?", "relevant_pmids": ["12853193"]},
+  {"question": "Do beta-blockers reduce mortality in elderly heart failure patients?", "relevant_pmids": ["15642700"]},
+  {"question": "What is the evidence for sacubitril/valsartan (an ARNI) in heart failure?", "relevant_pmids": ["33004114", "26642078"]},
+  {"question": "Do SGLT2 inhibitors improve outcomes in heart failure with reduced ejection fraction?", "relevant_pmids": ["32877652", "36041474", "38768620"]},
+  {"question": "Is dapagliflozin effective in patients hospitalized for acute heart failure?", "relevant_pmids": ["40884036"]},
+  {"question": "What is the prognostic significance of hyponatremia in heart failure?", "relevant_pmids": ["19850560", "18758941", "20838881", "21089110"]},
+  {"question": "How do serum sodium trajectories over time relate to survival in heart failure?", "relevant_pmids": ["36193558", "28698994"]},
+  {"question": "What is the role of tolvaptan or other vaptans in managing hyponatremia in heart failure?", "relevant_pmids": ["22437213", "23570283"]},
+  {"question": "How should a rise in serum creatinine during heart failure treatment be interpreted?", "relevant_pmids": ["31216531"]},
+  {"question": "When is acute kidney injury in acute heart failure a cause for concern?", "relevant_pmids": ["38944413"]},
+  {"question": "Do implantable defibrillators and cardiac resynchronization therapy benefit older adults with heart failure?", "relevant_pmids": ["31403714", "27371518", "29292244"]},
+  {"question": "What does the 2022 AHA/ACC/HFSA guideline recommend for managing heart failure?", "relevant_pmids": ["35363499", "35379503"]},
+  {"question": "Which therapies make up guideline-directed medical therapy for HFrEF?", "relevant_pmids": ["37254024", "40012353"]},
+  {"question": "How can mortality be predicted in patients with heart failure and systolic dysfunction?", "relevant_pmids": ["18489863"]},
+  {"question": "Can machine learning predict in-hospital mortality in elderly heart failure patients?", "relevant_pmids": ["39548495"]},
+  {"question": "What is the prognosis of heart failure with mid-range (mildly reduced) ejection fraction?", "relevant_pmids": ["30211480", "36740204"]}
+]

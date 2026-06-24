@@ -1,0 +1,25 @@
+# Project dependencies, grouped by build step.
+# We install INCREMENTALLY (only what each step needs) to keep the env lean.
+# At the end we freeze a reproducible lockfile:  pip freeze > requirements.lock.txt
+# (the lockfile is the supply-chain-pinned artifact; production would add hashes).
+
+# --- Core data / ML (Steps 1-2) ---
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.5
+xgboost>=2.1
+shap>=0.46
+matplotlib>=3.9
+ucimlrepo>=0.0.7          # one-line fetch of the UCI Heart Failure dataset
+
+# --- RAG: embeddings + vector store (Step 3) ---
+sentence-transformers>=3.0
+faiss-cpu>=1.8
+requests>=2.32           # NCBI E-utilities HTTP calls
+
+# --- Agent (Step 4) ---
+anthropic>=0.69
+python-dotenv>=1.0       # load .env so keys never live in code
+
+# --- App / demo (Step 8) ---
+streamlit>=1.38

@@ -1,0 +1,10 @@
+{
+  "test_n": 60,
+  "test_roc_auc": 0.7484,
+  "test_pr_auc": 0.6015,
+  "test_brier": 0.1815,
+  "brier_baseline": 0.218,
+  "pr_auc_baseline_prevalence": 0.3211,
+  "repeated_cv_roc_auc_mean": 0.7868,
+  "repeated_cv_roc_auc_std": 0.0648
+}

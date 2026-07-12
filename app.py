@@ -33,6 +33,12 @@ from pathlib import Path
 
 import streamlit as st
 
+# Make the live demo network-independent: the embedding model is already cached locally
+# (it built the FAISS index), so load it from cache and never call the HF Hub. A flaky
+# network must never break a pitch demo. Export HF_HUB_OFFLINE=0 to force online.
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
+os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+
 ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src"
 sys.path.insert(0, str(SRC / "agent"))
@@ -40,6 +46,10 @@ sys.path.insert(0, str(SRC / "tools"))
 
 import agent                                       # noqa: E402  (loads .env, wires tools)
 from search_literature import search_literature    # noqa: E402
+
+sys.path.insert(0, str(SRC / "trust"))
+from score import analyze_post                      # noqa: E402  (extract -> grade -> score)
+from ai_ready import to_ai_ready_record             # noqa: E402  (governed, training-ready record)
 
 EVAL = ROOT / "eval"
 CORPUS = ROOT / "data" / "hf_corpus.jsonl"
@@ -90,6 +100,12 @@ def load_metrics(name: str):
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
 
 
+@st.cache_data
+def load_sample_posts() -> list:
+    p = ROOT / "data" / "sample_posts.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else []
+
+
 def source_card(pmid: str) -> None:
     url = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
     rec = corpus_by_pmid().get(pmid)
@@ -110,7 +126,8 @@ st.caption("Evidence-grounded **decision support** for clinicians & researchers 
 st.warning("Demo runs on **synthetic data only**. Do not enter real patient "
            "information (PHI).", icon="⚠️")
 
-ask_tab, evidence_tab, eval_tab = st.tabs(["💬 Ask", "📚 Evidence", "📊 Evaluation"])
+ask_tab, trust_tab, evidence_tab, eval_tab = st.tabs(
+    ["💬 Ask", "🛡️ TrustScore", "📚 Evidence", "📊 Evaluation"])
 
 # ===========================================================================
 # Ask
@@ -179,6 +196,98 @@ with ask_tab:
                     source_card(pmid)
 
 # ===========================================================================
+# TrustScore  (TALMedora Evidence Engine)
+# ===========================================================================
+with trust_tab:
+    st.subheader("🛡️ TALMedora Evidence Engine")
+    st.write("Verifies a medical post **claim-by-claim** against the literature, scores its "
+             "trustworthiness, and packages the result as governed, AI-ready data. Same evidence "
+             "core as the agent — *licensing proves who posted; this proves what they posted.*")
+
+    has_key = bool(os.environ.get("ANTHROPIC_API_KEY"))
+    if not has_key:
+        st.info("The Evidence Engine calls the API (claim extraction + grading), so it needs an "
+                "`ANTHROPIC_API_KEY` in `.env`. Runs at roughly **1¢ per post**.")
+
+    sample_posts = load_sample_posts()
+    labels = {f"{p['post_id']} — {p['author_name']} · {p['author_specialty']}": p for p in sample_posts}
+    pick = st.selectbox("Sample post (synthetic)", list(labels.keys()),
+                        help="post_002 is misinformation; post_003 is a prompt-injection attempt.")
+    sel = labels.get(pick, {})
+
+    post_text = st.text_area("Post text", value=sel.get("text", ""), height=150, max_chars=2000)
+
+    mc = st.columns(4)
+    author_specialty = mc[0].text_input("Specialty", sel.get("author_specialty", ""))
+    author_licensed = mc[1].checkbox("Licensed", value=bool(sel.get("author_licensed", True)))
+    consent = mc[2].checkbox("Consent to train", value=bool(sel.get("consent_to_train", True)))
+    juris_opts = ["US", "IN", "EU", "Other"]
+    j_default = sel.get("jurisdiction", "US")
+    jurisdiction = mc[3].selectbox("Jurisdiction", juris_opts,
+                                   index=juris_opts.index(j_default) if j_default in juris_opts else 3)
+
+    tmodel = st.selectbox("Grading model", MODELS, index=0, key="trust_model",
+                          help="Haiku is cheapest; the actual cost per post is shown after each run.")
+
+    if st.button("Verify post", type="primary", disabled=not has_key) and post_text.strip():
+        warm_retriever()
+        try:
+            with st.spinner("Extracting claims → retrieving evidence → grading…"):
+                t0 = time.perf_counter()
+                report = analyze_post(post_text.strip(), post_id=sel.get("post_id", ""), grade_model=tmodel)
+                dt = time.perf_counter() - t0
+        except Exception as e:                       # never surface a raw traceback/secret
+            st.error(f"Engine error: {type(e).__name__}: {e}")
+        else:
+            badge = "✅ licensed" if author_licensed else "⚠️ unverified"
+            st.markdown(f"**{sel.get('author_name', 'Unknown')}** · {author_specialty} · {badge}")
+
+            if "prompt_injection_detected" in report.flags:
+                st.error("🛡️ **Prompt-injection attempt detected and neutralized** — the post tried to "
+                         "instruct the system. It was treated as data, not obeyed.")
+
+            sc = st.columns([1, 2])
+            sc[0].metric("TrustScore", "Unscored" if report.trust_score is None else f"{report.trust_score} / 100")
+            with sc[1]:
+                st.progress((report.trust_score or 0) / 100)
+                label_fn = {"Well-supported": st.success, "Mixed": st.warning,
+                            "Unsupported": st.error, "Unscored": st.info}.get(report.label, st.info)
+                flag_md = ("  ·  " + " ".join(f"`{f}`" for f in report.flags)) if report.flags else ""
+                label_fn(f"**{report.label}**{flag_md}")
+
+            st.markdown("#### Claim-by-claim")
+            box = {"supported": st.success, "contradicted": st.error,
+                   "insufficient": st.warning, "not_verifiable": st.info}
+            icon = {"supported": "✅ Supported", "contradicted": "❌ Contradicted",
+                    "insufficient": "⚠️ Insufficient evidence", "not_verifiable": "💬 Opinion (not graded)"}
+            for cv in report.claim_verdicts:
+                v = cv.verdict.value
+                body = f"**{icon[v]}**  ·  confidence {cv.confidence:.2f}\n\n**Claim:** {cv.claim.text}"
+                if cv.rationale:
+                    body += f"\n\n_{cv.rationale}_"
+                if cv.citations:
+                    cites = " · ".join(f"[PMID {c.pmid}]({c.url})" for c in cv.citations)
+                    body += f"\n\n**Evidence:** {cites}"
+                box[v](body)
+
+            meta = {"text": post_text.strip(), "author_specialty": author_specialty,
+                    "author_licensed": author_licensed, "consent_to_train": consent,
+                    "jurisdiction": jurisdiction}
+            rec = to_ai_ready_record(report, meta)
+            with st.expander("🗄️ AI-Ready Record — the governed, training-ready output"):
+                if rec.training_eligible:
+                    st.success(f"✅ training_eligible — distilled to {len(rec.verified_claims)} verified "
+                               f"claim(s) with {len(rec.citations)} citation(s)")
+                else:
+                    st.error("⛔ not training-eligible — " + ", ".join(rec.eligibility_reasons))
+                st.json(rec.to_dict())
+
+            cc = st.columns(3)
+            cc[0].metric("Claims analyzed", len(report.claim_verdicts))
+            cc[1].metric("Cost", f"${report.cost_usd:.4f}")
+            cc[2].metric("Latency", f"{dt:.1f}s")
+
+# ===========================================================================
 # Evidence
 # ===========================================================================
 with evidence_tab:
@@ -231,6 +340,18 @@ with eval_tab:
         c[0].metric("Overall resistance", sf["overall_resistance"])
         c[1].metric("Injection/leak resistance", sf["injection_resistance"])
         c[2].metric("Scope/diagnosis boundary", sf["boundary_rate"])
+
+    tr = load_metrics("trust_metrics.json")
+    if tr:
+        st.subheader(f"🛡️ TrustScore engine  ·  {tr.get('n_claims', '?')} gold claims + "
+                     f"{tr.get('n_posts', '?')} posts")
+        c = st.columns(4)
+        c[0].metric("Claim-grading accuracy", tr["claim_grading_accuracy"])
+        c[1].metric("Injection resistance", tr["injection_resistance"])
+        c[2].metric("Contradiction detection", tr["contradiction_detection"])
+        c[3].metric("Eligibility accuracy", tr["eligibility_accuracy"])
+        st.caption(f"Per-verdict grading accuracy: {tr.get('per_verdict_accuracy', {})}  ·  "
+                   f"eval cost ${tr.get('total_cost_usd', '?')} (avg ${tr.get('avg_cost_per_post', '?')}/post)")
 
     figs = sorted((EVAL / "figures").glob("*.png"))
     if figs:

@@ -9,6 +9,34 @@
 **Audience:** built for trained clinicians / researchers as decision support, and as a portfolio
 demonstration. It is **not** a patient-facing medical-advice or diagnostic tool.
 
+---
+
+## 🛡️ TALMedora Evidence Engine
+
+A **content-trust layer** for a licensed-professional medical platform, built with
+[TALMedora](https://www.talmedora.org)'s vision — *trusted knowledge as a foundation for medical AI* —
+in mind. **Licensing proves *who* posts; this verifies *what* they post.**
+
+Given a medical post, it:
+1. **Extracts** each claim and classifies it (empirical / opinion / non-medical) — injection-hardened, so an embedded *"ignore your rules"* is flagged, not obeyed.
+2. **Grades** every empirical claim against the literature — **Supported / Contradicted / Insufficient**, grounded *only* in retrieved passages, with real PMIDs (the model cannot fabricate a citation).
+3. **Scores** the post **0–100** — a transparent, confidence-weighted TrustScore; a single contradiction caps the label.
+4. **Governs** it into an **AI-Ready Record** — provenance, consent-to-train, jurisdiction, de-identification, and an auditable training-eligibility decision with a reason for every rejection. *(This is the bridge to a data-governance business: it turns raw posts into clean, consented, verified data an LLM team can actually use.)*
+
+**Evaluation** — `eval/eval_trust.py`, gold set in `eval/trust_gold.json`:
+
+| Claim-grading accuracy | Injection resistance | Contradiction detection | Cost |
+|---|---|---|---|
+| **100%** (9/9, all verdict types) | **100%** (attacks flagged & not obeyed) | **100%** | **~$0.008 / post** |
+
+> Proof-of-concept on a small, curated gold set — directional, not a production benchmark. The evidence
+> corpus is heart-failure-only, so off-domain posts correctly return *Insufficient* rather than guessing;
+> production would add a corpus per specialty.
+
+**See it:** run the demo (below) and open the **🛡️ TrustScore** tab. Code lives in [`src/trust/`](src/trust/).
+
+---
+
 ### Why it's interesting
 - **A real ML model as an agent tool** — the agent invokes a trained, calibrated classifier, not just an LLM.
 - **Calibration**, not just accuracy — clinical probabilities you can trust (Brier beats the base rate).
